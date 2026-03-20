@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Srullogic Systems | Keyboard Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7240f2;
+            --bg-light: #f4f7fe;
+            --text-light: #333;
+            --card-light: #ffffff;
+            --accent-green: #1ebea5;
+            --accent-red: #ff4757;
+            --accent-blue: #3498db;
+            --accent-gray: #636e72;
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --bg-light: #1a1a2e;
+            --text-light: #e0e0e0;
+            --card-light: #16213e;
+            --primary: #9d77ff;
+        }
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 450px;
+            background: var(--card-light);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        /* כפתור סגנון */
+        .style-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .logo-area {
+            margin-bottom: 20px;
+        }
+
+        .logo-area h2 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .logo-area h1 {
+            margin: 5px 0;
+            font-weight: 800;
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+
+        /* בורר מצבים */
+        .mode-selector {
+            display: flex;
+            background: #eee;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            padding: 5px;
+        }
+
+        [data-theme="dark"] .mode-selector { background: #0f172a; }
+
+        .mode-selector button {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            background: transparent;
+            transition: var(--transition);
+        }
+
+        .mode-selector button.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(114, 64, 242, 0.3);
+        }
+
+        /* תיבות טקסט */
+        .text-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            border: 2px solid #e0e6ed;
+            border-radius: 20px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: inherit;
+            resize: none;
+            background: transparent;
+            color: inherit;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* כפתורי ידני */
+        .manual-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-lang {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* כפתורי פעולה */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-action {
+            border: none;
+            padding: 12px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+
+        .btn-action:active { transform: scale(0.95); }
+
+        .bg-green { background: var(--accent-green); }
+        .bg-red { background: var(--accent-red); }
+        .bg-blue { background: var(--accent-blue); }
+        .bg-gray { background: var(--accent-gray); }
+        .btn-full { grid-column: span 2; }
+
+        footer {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="style-btn" onclick="toggleTheme()">🎨 סגנון</button>
+
+    <div class="logo-area">
+        <h2>Srullogic Systems</h2>
+        <h1>⚡ Keyboard Elite</h1>
+    </div>
+
+    <div class="mode-selector">
+        <button id="mode-auto" class="active" onclick="setMode('auto')">אוטומטי</button>
+        <button id="mode-manual" onclick="setMode('manual')">ידני</button>
+    </div>
+
+    <div class="text-box">
+        <textarea id="inputArea" placeholder="כתוב כאן . . ." oninput="handleInput()"></textarea>
+        <div class="char-count"><span id="inCount">0</span> תווים</div>
+    </div>
+
+    <div id="manualBtns" class="manual-controls" style="display: none;">
+        <button class="btn-lang" onclick="convert('heToEn')">us English</button>
+        <button class="btn-lang" onclick="convert('enToHe')">IL עברית</button>
+    </div>
+
+    <div class="text-box">
+        <textarea id="outputArea" readonly placeholder="התוצאה . . ."></textarea>
+        <div class="char-count"><span id="outCount">0</span> תווים</div>
+    </div>
+
+    <div class="action-grid">
+        <button class="btn-action bg-green" onclick="copyText()">📋 העתק</button>
+        <button class="btn-action bg-green" onclick="whatsappShare()">💬 WhatsApp</button>
+        <button class="btn-action bg-red" onclick="clearAll()">🗑️ נקה</button>
+        <button class="btn-action bg-blue" onclick="shareText()">📤 שתף</button>
+        <button class="btn-action bg-red btn-full" onclick="googleSearch()">🔍 חפש בגוגל</button>
+        <button class="btn-action bg-gray btn-full" onclick="location.reload()">🔄 רענן דף</button>
+    </div>
+
+    <footer>.Srullogic Systems. All rights reserved 2026 ©</footer>
+</div>
+
+<script>
+    const mapping = {
+        'q':'/','w':'\'','e':'ק','r':'ר','t':'א','y':'ט','u':'ו','i':'ן','o':'ם','p':'פ',
+        'a':'ש','s':'ד','d':'ג','f':'כ','g':'ע','h':'י','j':'ח','k':'ל','l':'ך',';':'ף','\'':',',
+        'z':'ז','x':'ס','c':'ב','v':'ה','b':'נ','n':'מ','m':'צ',',':'ת','.':'ץ','/':'.',' ':' '
+    };
+    
+    const revMapping = Object.fromEntries(Object.entries(mapping).map(([k, v]) => [v, k]));
+
+    let currentMode = 'auto';
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('mode-auto').classList.toggle('active', mode === 'auto');
+        document.getElementById('mode-manual').classList.toggle('active', mode === 'manual');
+        document.getElementById('manualBtns').style.display = (mode === 'manual') ? 'grid' : 'none';
+    }
+
+    function handleInput() {
+        const input = document.getElementById('inputArea').value;
+        document.getElementById('inCount').innerText = input.length;
+        
+        if(currentMode === 'auto') {
+            autoConvert(input);
+        }
+    }
+
+    function autoConvert(text) {
+        // לוגיקה פשוטה: אם רוב התווים הם אנגלית, נהפוך לעברית
+        const englishChars = text.match(/[a-z]/gi) || [];
+        if (englishChars.length > text.length / 4) {
+            convert('enToHe');
+        } else {
+            document.getElementById('outputArea').value = text;
+        }
+    }
+
+    function convert(type) {
+        const input = document.getElementById('inputArea').value;
+        let result = "";
+        const map = (type === 'enToHe') ? mapping : revMapping;
+
+        for (let char of input.toLowerCase()) {
+            result += map[char] || char;
+        }
+        
+        document.getElementById('outputArea').value = result;
+        document.getElementById('outCount').innerText = result.length;
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    function copyText() {
+        const out = document.getElementById('outputArea');
+        out.select();
+        document.execCommand('copy');
+        alert('הטקסט הועתק!');
+    }
+
+    function clearAll() {
+        document.getElementById('inputArea').value = "";
+        document.getElementById('outputArea').value = "";
+        document.getElementById('inCount').innerText = "0";
+        document.getElementById('outCount').innerText = "0";
+    }
+
+    function googleSearch() {
+        const text = document.getElementById('outputArea').value || document.getElementById('inputArea').value;
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function whatsappShare() {
+        const text = document.getElementById('outputArea').value;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function shareText() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Keyboard Elite Share',
+                text: document.getElementById('outputArea').value
+            });
+        } else {
+            alert('שיתוף לא נתמך בדפדפן זה, העתק את הטקסט.');
+        }
+    }
+</script>
+
+</body>
+</html>
